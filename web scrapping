@@ -1,0 +1,436 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOllCiBFgT/iqmn0sMCKbXN",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Mohamed-Fedi-Belaid/Product_Category_Prediction_using_ML/blob/main/web%20scrapping\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Scrapper les sites web concurents à Digidis"
+      ],
+      "metadata": {
+        "id": "Wi_AQUGQHoZa"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# **1. Installer les Bibliothèques Nécessaires**"
+      ],
+      "metadata": {
+        "id": "UwiAljGaH2Zn"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "RiMInpWfHifZ",
+        "outputId": "90e8b060-0426-408d-d88f-f90834c19b99"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: requests in /usr/local/lib/python3.10/dist-packages (2.31.0)\n",
+            "Requirement already satisfied: beautifulsoup4 in /usr/local/lib/python3.10/dist-packages (4.12.3)\n",
+            "Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/dist-packages (from requests) (3.3.2)\n",
+            "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.10/dist-packages (from requests) (3.7)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests) (2.0.7)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.10/dist-packages (from requests) (2024.2.2)\n",
+            "Requirement already satisfied: soupsieve>1.2 in /usr/local/lib/python3.10/dist-packages (from beautifulsoup4) (2.5)\n"
+          ]
+        }
+      ],
+      "source": [
+        "pip install requests beautifulsoup4"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# **2. Importer les Bibliothèques**"
+      ],
+      "metadata": {
+        "id": "bwMErj2uIFDo"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import requests\n",
+        "from bs4 import BeautifulSoup"
+      ],
+      "metadata": {
+        "id": "II06AgHVIC5g"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# **3. Envoyer une Requête HTTP à la Page Web**"
+      ],
+      "metadata": {
+        "id": "ZZZnXGFpIQKB"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "url = 'https://www.wamia.tn/'\n",
+        "response = requests.get(url)"
+      ],
+      "metadata": {
+        "id": "hSJ1NVKcIQbU"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# **4. Vérifier le Contenu de la Réponse**"
+      ],
+      "metadata": {
+        "id": "V-2N8mvcIYau"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "if response.status_code == 200:\n",
+        "    print(\"Requête réussie\")\n",
+        "else:\n",
+        "    print(\"Erreur lors de la requête:\", response.status_code)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Goc17A9OIah1",
+        "outputId": "a6af323d-dd97-4216-b232-f6a9226a0e46"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requête réussie\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# **5. Analyser le Contenu de la Page avec Beautiful Soup**"
+      ],
+      "metadata": {
+        "id": "tCpxEs9sIeQ2"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "soup = BeautifulSoup(response.content, 'html.parser')"
+      ],
+      "metadata": {
+        "id": "zhqu072QIgiB"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# **6. Extraire les Informations Souhaitées**"
+      ],
+      "metadata": {
+        "id": "44aTIHh8IkPv"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "products = soup.find_all('div', class_='info')\n",
+        "\n",
+        "for product in products:\n",
+        "    title = product.find('h3', class_='name').text.strip()\n",
+        "    price = product.find('div', class_='prc').text.strip()\n",
+        "    print(f\"Produit: {title}, Prix: {price}\")"
+      ],
+      "metadata": {
+        "id": "9E85Q8MYImru"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# **7. Gestion des Pagination**"
+      ],
+      "metadata": {
+        "id": "no23gt2sItcf"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import requests\n",
+        "from bs4 import BeautifulSoup\n",
+        "\n",
+        "# URL de base du site Wamia\n",
+        "base_url = 'https://www.wamia.tn/catalog/?page='\n",
+        "\n",
+        "# Boucle pour scraper les 4 premières pages, par exemple\n",
+        "for page in range(1, 5):\n",
+        "    # Construction de l'URL de la page actuelle\n",
+        "    url = base_url + str(page)\n",
+        "\n",
+        "    # En-tête pour simuler une requête provenant d'un navigateur\n",
+        "    headers = {\n",
+        "        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'\n",
+        "    }\n",
+        "\n",
+        "    # Envoi de la requête HTTP à l'URL actuelle\n",
+        "    response = requests.get(url, headers=headers)\n",
+        "\n",
+        "    # Vérification de la réussite de la requête\n",
+        "    if response.status_code == 200:\n",
+        "        # Analyse du contenu HTML de la page\n",
+        "        soup = BeautifulSoup(response.content, 'html.parser')\n",
+        "\n",
+        "        # Extraction des informations des produits\n",
+        "        # Assurez-vous que les sélecteurs HTML ci-dessous correspondent à la structure de Wamia\n",
+        "        products = soup.find_all('div', class_='product-container')\n",
+        "\n",
+        "        # Boucle à travers les produits\n",
+        "        for product in products:\n",
+        "            # Extraction du titre du produit\n",
+        "            title = product.find('h3', class_='product-name').text.strip()\n",
+        "\n",
+        "            # Extraction du prix du produit\n",
+        "            price = product.find('div', class_='product-price').text.strip()\n",
+        "\n",
+        "            # Affichage des informations du produit\n",
+        "            print(f\"Produit: {title}, Prix: {price}\")\n",
+        "    else:\n",
+        "        # Affichage d'une erreur si la requête a échoué\n",
+        "        print(f\"Erreur lors de la requête pour la page {page}: {response.status_code}\")\n"
+      ],
+      "metadata": {
+        "id": "xDRF2wPUIxRf"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import requests\n",
+        "from bs4 import BeautifulSoup\n",
+        "\n",
+        "def scrape_jumia(pages=1):\n",
+        "    base_url = 'https://www.jumia.com.tn/catalog/?page='\n",
+        "\n",
+        "    for page in range(1, pages + 1):\n",
+        "        url = base_url + str(page)\n",
+        "        response = requests.get(url)\n",
+        "\n",
+        "        if response.status_code == 200:\n",
+        "            soup = BeautifulSoup(response.content, 'html.parser')\n",
+        "            products = soup.find_all('div', class_='info')\n",
+        "\n",
+        "            for product in products:\n",
+        "                title = product.find('h3', class_='name').text.strip()\n",
+        "                price = product.find('div', class_='prc').text.strip()\n",
+        "                print(f\"Produit: {title}, Prix: {price}\")\n",
+        "        else:\n",
+        "            print(f\"Erreur lors de la requête pour la page {page}: {response.status_code}\")\n",
+        "\n",
+        "# Scraping les 2 premières pages par exemple\n",
+        "scrape_jumia(pages=2)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "dxBug8zYI8bK",
+        "outputId": "d79855ae-ce6f-4dcd-bf90-12d543f1122f"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Produit: Infinix SMART 8 6,6\" HD 4GO 128GO – NOIR, Prix: 339.00 TND\n",
+            "Produit: Qcy Ecouteur -T1C - Noir, Prix: 44.90 TND\n",
+            "Produit: Daylong LAIT EXTREME 50+ 50ML, Prix: 47.90 TND\n",
+            "Produit: Infinix SMART 8 6,6\" 4GO 64GO – BLANC, Prix: 319.00 TND\n",
+            "Produit: Moulinex Blender Genuine - 400W - Bol 1,25 L - 2 Accessoires - Blanc - Garantie 1 An, Prix: 159.00 TND\n",
+            "Produit: Brandt ASPIRATEUR SANS SAC ASS120R 1200W - NOIR&ROUGE, Prix: 219.00 TND\n",
+            "Produit: Moulinex Moulinette avec bol - 800 W - Système 1-2-3 - 1L - Blanc - Garantie 1 An, Prix: 199.00 TND\n",
+            "Produit: Tefal Batterie de cuisine Tefal - 5 pièces - Tous feux sauf induction - Antiadhésive, Prix: 169.90 TND\n",
+            "Produit: XIAOMI \t ÉCOUTEURS MI IN EAR BASIC NOIR, Prix: 16.00 TND\n",
+            "Produit: XIAOMI Redmi 13C 6Go 128 Go Navy Blue, Prix: 489.00 TND\n",
+            "Produit: Vivo SMARTPHONE Y03 4GO 64GO - NOIR, Prix: 349.00 TND\n",
+            "Produit: Infinix HOT 40i – 6,78” 8Go + 256 Go - 50MP – Vert, Prix: 499.00 TND\n",
+            "Produit: Tefal Batterie de cuisine antiadhésive Tefal, Super Cook, 10 pièces, 02 marmites avec couvercle 24cm & 22cm - Wok 28cm - casserole 16cm - poêle 24cm - 3 ustensiles de cuisines, Prix: 299.00 TND\n",
+            "Produit: Samsung GALAXY A05 4GO-64GO, Prix: 409.00 TND\n",
+            "Produit: Daisini Poêle magique - Double face - 36cm Granite Noir Avec joint En silicone - Gratuit, Prix: 74.90 TND\n",
+            "Produit: Gree CLIMATISEUR 24000BTU INVERTER TROPICALISÉ SMART CL24ALEXF-INVT-SMART, Prix: 2,849.00 TND\n",
+            "Produit: Gree Climatiseur 12000BTU Inverter Tropicalisé Smart Chaud & Froid, Prix: 1,629.00 TND\n",
+            "Produit: Lea Tondeuse à gazon - Electrique - 1000 W - 32 cm, Prix: 259.00 TND\n",
+            "Produit: P47 Casque Bluetooth - MP3 - Noir, Prix: 17.00 TND\n",
+            "Produit: Sotufab Table pliante ruspina - Blanc, Prix: 54.00 TND\n",
+            "Produit: Garnier SkinActive Eau Micellaire - Tout en 1 - Peaux Sensibles - 400ml, Prix: 17.29 TND\n",
+            "Produit: Russell Hobbs Fer à repasser Light & Easy Brights Sapphire - 26483-56 - Garantie 2 Ans, Prix: 119.00 TND\n",
+            "Produit: P47 Casque Bluetooth - MP3 – Bleu, Prix: 17.00 TND\n",
+            "Produit: Techwood Barbecue sur pied - TBQ-825P - 38 * 22 cm - Sans fumé - 2000 W, Prix: 199.00 TND\n",
+            "Produit: Dessini Série 5 Faitouts - Avec Couvercles En Verre- 2 gants  -Rose, Prix: 289.00 TND\n",
+            "Produit: Garnier Skin Active Fast Bright Vitamine C - Nettoyant visage éclarcissant - 100ml, Prix: 15.29 TND\n",
+            "Produit: Garnier SkinActive Eau Micellaire - Tout en 1 - Peaux Sensibles - 100 ml, Prix: 7.29 TND\n",
+            "Produit: Samsung Téléviseur crystal UHD 65 pouces -TU7000 - Garantie 2 ans, Prix: 2,899.00 TND\n",
+            "Produit: SIDI DAOUED THON ENTIER 400 GR Huile Vegetale, Prix: 10.99 TND\n",
+            "Produit: Brandt Friteuse air fryer 5L 1500W Noir - Garantie 1an, Prix: 299.00 TND\n",
+            "Produit: Derma Roller Rouleau de massage Et de soins du visage - 0.5 mm, Prix: 15.50 TND\n",
+            "Produit: Generic Guirlande lumineuse décoratif - Kit 100 LED -  Blanc chaud - 10M, Prix: 11.00 TND\n",
+            "Produit: Skin's laboratory Pack 4en1 Peaux Mixtes Grasses - Gel Nettoyant 200ml + Lotion Tonique 80ml + Eau Micéllaire 80ml + Crème Vaseline 50ml, Prix: 26.90 TND\n",
+            "Produit: Samsung TV Grand Taille 75\" Full Option serie 7, Prix: 4,889.00 TND\n",
+            "Produit: Brazilian Glow Protéine collagene Caviar Love Pack, Prix: 42.00 TND\n",
+            "Produit: Skin's laboratory Pack 4en1 Peaux Sèches - Gel Nettoyant 200ml + Lotion Tonique 80ml + Eau Micéllaire 80ml + Crème Vaseline 50ml, Prix: 26.90 TND\n",
+            "Produit: Brazilian Glow Kit soins - Shampoing 0% Sulfate - Masque Caviar -, Prix: 37.00 TND\n",
+            "Produit: Htc Tondeuse Cheveux Barbe - Sans Fil - Noir - AT522, Prix: 16.90 TND\n",
+            "Produit: Icshoes+ Sneakers LC M24 - Noir - Respirantes,antidérapantes,Légère - Pour Homme -, Prix: 33.00 TND - 35.00 TND\n",
+            "Produit: Icshoes+ Sneakers  running LC H80 sans lacets pour Homme Femme - Noir -  Slip On, Prix: 33.00 TND - 35.00 TND\n",
+            "Produit: Garnier Skin Active Solution micellaire tout en 1 à la Vitamine C - 400ml, Prix: 16.49 TND\n",
+            "Produit: Maybelline New York Mascara Sky High lash sensational, Prix: 37.99 TND\n",
+            "Produit: Finger Manches - Mobile game - Compatible avec Android et iOS - Noir, Prix: 7.00 TND\n",
+            "Produit: Garnier Ultra Doux - Hair Food - Masque Banane pour Cheveux - 390 ml, Prix: 18.99 TND\n",
+            "Produit: Maybelline New York Rouge à lèvre Mat Liquide - Superstay Matte Ink - 65 Seductress, Prix: 36.99 TND\n",
+            "Produit: L'Oréal Paris Hyaluron Expert Soin Repulpant Hydratant - Jour SPF 20 - 50 ml, Prix: 29.99 TND\n",
+            "Produit: Garnier Masque Tissu Œil Anti Cernes Super Hydratant - Jus d'Orange, Prix: 5.99 TND\n",
+            "Produit: Brazilian Glow Pack Kératine Protéine Caviar - 60ml, Prix: 26.00 TND\n",
+            "Produit: Infinix SMART 8 6,6\" 4GO 64GO – NOIR, Prix: 319.00 TND\n",
+            "Produit: Garnier Hair Food Masque Réparateur Ultra Doux à La Papaye - 390ml, Prix: 19.99 TND\n",
+            "Produit: Garnier Ultra Doux Shampoing Huiles Avocat et Beurre de Karité - 200ml, Prix: 9.29 TND\n",
+            "Produit: Garnier Eau Micellaire Skin Active - Tout en 1 à l'Eau de Rose - 400ml, Prix: 17.59 TND\n",
+            "Produit: Ring Light Pour Selfie - Maquillage - Vidéo - Appareil Photo, Prix: 43.00 TND\n",
+            "Produit: Skin's laboratory Sérum Vitamine C Pure Rénovateur Éclat Anti Tâche, Anti Oxydant - 50ml, Prix: 43.90 TND\n",
+            "Produit: Garnier Hair Food Masque Hydratant Ultra Doux à L'aloe Vera - 390ml, Prix: 19.99 TND\n",
+            "Produit: Infinix SMART 8 6,6\" HD 4GO 128GO – BLANC, Prix: 339.00 TND\n",
+            "Produit: Kit 100 LED Noël - Guirlande de fête lumineuse décoratif - Fil multifonction - 10 m - Jaune, Prix: 9.90 TND\n",
+            "Produit: Maybelline New York Mascara - The Falsies Lash Lift - Noir, Prix: 34.19 TND\n",
+            "Produit: Generic Seche Linge Mural et Pliable - Etendoir a corde rabattable avec Corde à Linge Gratuit, Prix: 28.00 TND\n",
+            "Produit: Infinix SMART 8 6,6\" 4GO 64GO – VERT, Prix: 319.00 TND\n",
+            "Produit: Merit Lot 6 Débardeurs Pour Homme - Blanc, Prix: 32.90 TND\n",
+            "Produit: Brosse cheveux Pneumatique Bois, Prix: 8.91 TND\n",
+            "Produit: Qcy Ecouteur bluetooth - T13 - Noir, Prix: 89.00 TND\n",
+            "Produit: menzberg Lot de 8 sacs de Rangement noir pour Vetement,ou Rangement pour Couette, Prix: 48.90 TND\n",
+            "Produit: Derma-roller & éponge beauty blender & brosse silicone, Prix: 19.70 TND\n",
+            "Produit: W5 Tablettes lave-vaisselle - 40 Tabs + 4 Gratuit, Prix: 21.90 TND\n",
+            "Produit: Daling Tondeuse à cheveux rechargeable - Finition 0 Mm-Afficheur, Prix: 36.45 TND\n",
+            "Produit: L'Oréal Paris Hyaluron Expert Soin Repulpant Hydratant - Crème Masque de nuit - 50 ml, Prix: 29.99 TND\n",
+            "Produit: Brazilian Glow Kit - Kératine Caviar, Prix: 36.00 TND\n",
+            "Produit: Daylong Lotion lait solaire - Extreme SPF50+ - 100ml, Prix: 64.90 TND\n",
+            "Produit: VGR Tondeuse à cheveux - Rasage électrique professionnel USB rechargeable -  V-030, Prix: 39.20 TND\n",
+            "Produit: XIAOMI Redmi A2+ - 6.52\" - 2Go -32Go - Noir  - Garantie 1an, Prix: 259.00 TND\n",
+            "Produit: Garnier Masque Tissu Grenade Super Hydratant & Repulpant - Peaux déshydratées, Prix: 8.59 TND\n",
+            "Produit: Relax Lot De 4 Boxers relax - Coton - Anti-irritation, Respirant, Prix: 32.90 TND\n",
+            "Produit: Maybelline New York Rouge à lèvre Mat Liquide - Superstay Matte Ink - 70 Amazonian, Prix: 36.99 TND\n",
+            "Produit: Generic Protège coin table - Sécurité enfants - Lot de 4, Prix: 8.00 TND\n",
+            "Produit: Garnier Ultra Doux Masque - Huile d'avocat et beurre de karité - 320 ml, Prix: 15.89 TND\n",
+            "Produit: Brazilian Glow Sérum Caviar Thermo-Lissant, Prix: 14.90 TND\n",
+            "Produit: WOLF MOTO Trottinette Electrique Pliable  - Puissance Moteur 350w - Noir, Prix: 1,250.00 TND\n",
+            "Produit: SVR SUN SECURE FLUIDE SPF50+ 50ML, Prix: 49.00 TND\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import requests\n",
+        "from bs4 import BeautifulSoup\n",
+        "\n",
+        "def scrape_wamia(pages=1):\n",
+        "    base_url = 'https://www.wamia.tn/catalog/?page='\n",
+        "\n",
+        "    for page in range(1, pages + 1):\n",
+        "        url = base_url + str(page)\n",
+        "        headers = {\n",
+        "            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'\n",
+        "        }\n",
+        "        response = requests.get(url, headers=headers)\n",
+        "\n",
+        "        if response.status_code == 200:\n",
+        "            soup = BeautifulSoup(response.content, 'html.parser')\n",
+        "            products = soup.find_all('div', class_='product-container')  # Adaptez ce sélecteur à la structure HTML de Wamia\n",
+        "\n",
+        "            for product in products:\n",
+        "                title = product.find('h3', class_='product-name').text.strip()  # Adaptez ce sélecteur\n",
+        "                price = product.find('div', class_='product-price').text.strip()  # Adaptez ce sélecteur\n",
+        "                print(f\"Produit: {title}, Prix: {price}\")\n",
+        "        else:\n",
+        "            print(f\"Erreur lors de la requête pour la page {page}: {response.status_code}\")\n",
+        "\n",
+        "# Scraping les 2 premières pages par exemple\n",
+        "scrape_wamia(pages=2)\n"
+      ],
+      "metadata": {
+        "id": "XWw2E8dSKauI"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Exemple de vérification des sélecteurs dans le navigateur\n",
+        "products = soup.find_all('div', class_='product-container')  # Adaptez ce sélecteur à la structure HTML de Wamia\n",
+        "\n",
+        "for product in products:\n",
+        "    title = product.find('h3', class_='product-name').text.strip()  # Adaptez ce sélecteur\n",
+        "    price = product.find('div', class_='product-price').text.strip()  # Adaptez ce sélecteur\n",
+        "    print(f\"Produit: {title}, Prix: {price}\")"
+      ],
+      "metadata": {
+        "id": "F4kuHUJ-Knop"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
